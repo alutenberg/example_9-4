@@ -5,20 +5,20 @@
 
 #include "pc_serial_com.h"
 
-#include "alarm.h"
 #include "siren.h"
 #include "fire_alarm.h"
 #include "code.h"
 #include "date_and_time.h"
 #include "temperature_sensor.h"
-#include "motion_sensor.h"
 #include "gas_sensor.h"
 #include "event_log.h"
 #include "motor.h"
 #include "gate.h"
+#include "motion_sensor.h"
+#include "alarm.h"
 #include "sd_card.h"
 
-//=====[Declaration of private defines]=======================================
+//=====[Declaration of private defines]========================================
 
 //=====[Declaration of private data types]=====================================
 
@@ -31,7 +31,7 @@ typedef enum{
 
 //=====[Declaration and initialization of public global objects]===============
 
-Serial uartUsb(USBTX, USBRX);
+UnbufferedSerial uartUsb(USBTX, USBRX,115200);
 
 //=====[Declaration of external public global variables]=======================
 
@@ -52,6 +52,9 @@ static char fileName[40];
 
 //=====[Declarations (prototypes) of private functions]========================
 
+static void pcSerialComCharWrite( char chr );
+static void pcSerialComStringRead( char* str, int strLength );
+
 static void pcSerialComGetCodeUpdate( char receivedChar );
 static void pcSerialComSaveNewCodeUpdate( char receivedChar );
 static void pcSerialComGetFileName( char receivedChar );
@@ -60,9 +63,7 @@ static void pcSerialComShowSdCardFile( char * readBuffer ) ;
 static void pcSerialComCommandUpdate( char receivedChar );
 
 static void availableCommands();
-static void commandShowCurrentSirenState();
-static void commandShowCurrentMotorState();
-static void commandShowCurrentGateState();
+static void commandShowCurrentAlarmState();
 static void commandShowCurrentGasDetectorState();
 static void commandShowCurrentOverTemperatureDetectorState();
 static void commandEnterCodeSequence();
@@ -70,8 +71,10 @@ static void commandEnterNewCode();
 static void commandShowCurrentTemperatureInCelsius();
 static void commandShowCurrentTemperatureInFahrenheit();
 static void commandSetDateAndTime();
-static void commandShowStoredEvents();
 static void commandShowDateAndTime();
+static void commandShowStoredEvents();
+static void commandShowCurrentMotorState();
+static void commandShowCurrentGateState();
 static void commandMotionSensorActivate();
 static void commandMotionSensorDeactivate();
 static void commandEventLogSaveToSdCard();
@@ -89,19 +92,21 @@ char pcSerialComCharRead()
 {
     char receivedChar = '\0';
     if( uartUsb.readable() ) {
-        receivedChar = uartUsb.getc();
+        uartUsb.read(&receivedChar,1);
     }
     return receivedChar;
 }
 
 void pcSerialComStringWrite( const char* str )
 {
-    uartUsb.printf( "%s", str );
+    uartUsb.write( str, strlen(str) );
 }
 
 void pcSerialComIntWrite( int number )
 {
-    uartUsb.printf( "%d", number );
+    char str[100];
+    sprintf( str, "%d", number );
+    pcSerialComStringWrite( str );
 }
 
 void pcSerialComUpdate()
@@ -142,10 +147,27 @@ void pcSerialComCodeCompleteWrite( bool state )
 
 //=====[Implementations of private functions]==================================
 
+static void pcSerialComCharWrite( char chr )
+{
+    char str[2];
+    sprintf (str, "%c", chr);
+    uartUsb.write( str, strlen(str) );
+}
+
+static void pcSerialComStringRead( char* str, int strLength )
+{
+    int strIndex;
+    for ( strIndex = 0; strIndex < strLength; strIndex++) {
+        uartUsb.read( &str[strIndex] , 1 );
+        uartUsb.write( &str[strIndex] ,1 );
+    }
+    str[strLength]='\0';
+}
+
 static void pcSerialComGetCodeUpdate( char receivedChar )
 {
     codeSequenceFromPcSerialCom[numberOfCodeChars] = receivedChar;
-    uartUsb.printf( "*" );
+    pcSerialComStringWrite( "*" );
     numberOfCodeChars++;
    if ( numberOfCodeChars >= CODE_NUMBER_OF_KEYS ) {
         pcSerialComMode = PC_SERIAL_COMMANDS;
@@ -159,20 +181,20 @@ static void pcSerialComSaveNewCodeUpdate( char receivedChar )
     static char newCodeSequence[CODE_NUMBER_OF_KEYS];
 
     newCodeSequence[numberOfCodeChars] = receivedChar;
-    uartUsb.printf( "*" );
+    pcSerialComStringWrite( "*" );
     numberOfCodeChars++;
     if ( numberOfCodeChars >= CODE_NUMBER_OF_KEYS ) {
         pcSerialComMode = PC_SERIAL_COMMANDS;
         numberOfCodeChars = 0;
         codeWrite( newCodeSequence );
-        uartUsb.printf( "\r\nNew code configured\r\n\r\n" );
+        pcSerialComStringWrite( "\r\nNew code configured\r\n\r\n" );
     } 
 }
 
 static void pcSerialComCommandUpdate( char receivedChar )
 {
     switch (receivedChar) {
-        case '1': commandShowCurrentSirenState(); break;
+        case '1': commandShowCurrentAlarmState(); break;
         case '2': commandShowCurrentGasDetectorState(); break;
         case '3': commandShowCurrentOverTemperatureDetectorState(); break;
         case '4': commandEnterCodeSequence(); break;
@@ -195,117 +217,91 @@ static void pcSerialComCommandUpdate( char receivedChar )
 
 static void availableCommands()
 {
-    uartUsb.printf( "Available commands:\r\n" );
-    uartUsb.printf( "Press '1' to get the alarm state\r\n" );
-    uartUsb.printf( "Press '2' for gas detector state\r\n" );
-    uartUsb.printf( "Press '3' for over temperature detector state\r\n" );
-    uartUsb.printf( "Press '4' to enter the code to deactivate the alarm\r\n" );
-    uartUsb.printf( "Press '5' to enter a new code to deactivate the alarm\r\n" );
-    uartUsb.printf( "Press 'f' or 'F' to get lm35 reading in Fahrenheit\r\n" );
-    uartUsb.printf( "Press 'c' or 'C' to get lm35 reading in Celsius\r\n" );
-    uartUsb.printf( "Press 's' or 'S' to set the date and time\r\n" );
-    uartUsb.printf( "Press 't' or 'T' to get the date and time\r\n" );
-    uartUsb.printf( "Press 'e' or 'E' to get the stored events\r\n" );
-    uartUsb.printf( "Press 'm' or 'M' to show the motor status\r\n" );
-    uartUsb.printf( "Press 'g' or 'G' to show the gate status\r\n" );
-    uartUsb.printf( "Press 'I' or 'I' to activate the motion sensor\r\n" );
-    uartUsb.printf( "Press 'h' or 'H' to deactivate the motion sensor\r\n" );
-    uartUsb.printf( "Press 'w' or 'W' to store the events log in the SD card\r\n" );
-    uartUsb.printf( "Press 'l' or 'L' to list all the files in the root directory of the SD card\r\n" );
-    uartUsb.printf( "Press 'o' or 'O' to show an SD Card file contents\r\n" );
-    uartUsb.printf( "\r\n" );
+    pcSerialComStringWrite( "Available commands:\r\n" );
+    pcSerialComStringWrite( "Press '1' to get the alarm state\r\n" );
+    pcSerialComStringWrite( "Press '2' for gas detector state\r\n" );
+    pcSerialComStringWrite( "Press '3' for over temperature detector state\r\n" );
+    pcSerialComStringWrite( "Press '4' to enter the code to deactivate the alarm\r\n" );
+    pcSerialComStringWrite( "Press '5' to enter a new code to deactivate the alarm\r\n" );
+    pcSerialComStringWrite( "Press 'f' or 'F' to get lm35 reading in Fahrenheit\r\n" );
+    pcSerialComStringWrite( "Press 'c' or 'C' to get lm35 reading in Celsius\r\n" );
+    pcSerialComStringWrite( "Press 's' or 'S' to set the date and time\r\n" );
+    pcSerialComStringWrite( "Press 't' or 'T' to get the date and time\r\n" );
+    pcSerialComStringWrite( "Press 'e' or 'E' to get the stored events\r\n" );
+    pcSerialComStringWrite( "Press 'm' or 'M' to show the motor status\r\n" );
+    pcSerialComStringWrite( "Press 'g' or 'G' to show the gate status\r\n" );    
+    pcSerialComStringWrite( "Press 'i' or 'I' to activate the motion sensor\r\n" );
+    pcSerialComStringWrite( "Press 'h' or 'H' to deactivate the motion sensor\r\n" );
+    pcSerialComStringWrite( "Press 'w' or 'W' to store the events log in the SD card\r\n" );
+    pcSerialComStringWrite( "Press 'l' or 'L' to list all the files " );
+    pcSerialComStringWrite( "in the root directory of the SD card\r\n" );
+    pcSerialComStringWrite( "Press 'o' or 'O' to show an SD Card file contents\r\n" );
+    pcSerialComStringWrite( "\r\n" );
 }
 
-static void commandShowCurrentSirenState()
+static void commandShowCurrentAlarmState()
 {
     if ( alarmStateRead() ) {
-        uartUsb.printf( "The alarm is activated\r\n");
+        pcSerialComStringWrite( "The alarm is activated\r\n");
     } else {
-        uartUsb.printf( "The alarm is not activated\r\n");
-    }
-}
-
-static void commandShowCurrentMotorState()
-{
-    switch ( motorDirectionRead() ) {
-        case STOPPED: uartUsb.printf( "The motor is stopped\r\n"); break;
-        case DIRECTION_1: 
-            uartUsb.printf( "The motor is turning in direction 1\r\n"); break;
-        case DIRECTION_2: 
-            uartUsb.printf( "The motor is turning in direction 2\r\n"); break;
-    }
-
-}
-
-static void commandShowCurrentGateState()
-{
-    switch ( gateStatusRead() ) {
-        case GATE_CLOSED: uartUsb.printf( "The gate is closed\r\n"); break;
-        case GATE_OPEN: uartUsb.printf( "The gate is open\r\n"); break;
-        case GATE_OPENING: uartUsb.printf( "The gate is opening\r\n"); break;
-        case GATE_CLOSING: uartUsb.printf( "The gate is closing\r\n"); break;
+        pcSerialComStringWrite( "The alarm is not activated\r\n");
     }
 }
 
 static void commandShowCurrentGasDetectorState()
 {
     if ( gasDetectorStateRead() ) {
-        uartUsb.printf( "Gas is being detected\r\n"); // Ver de poner la concentracion de gas no este superando el umbral
+        pcSerialComStringWrite( "Gas is being detected\r\n"); // Ver de poner la concentracion de gas no este superando el umbral
     } else {
-        uartUsb.printf( "Gas is not being detected\r\n");
+        pcSerialComStringWrite( "Gas is not being detected\r\n");
     }    
-}
-
-static void commandMotionSensorActivate()
-{
-    motionSensorActivate();
-}
-
-static void commandMotionSensorDeactivate()
-{
-    motionSensorDeactivate();
 }
 
 static void commandShowCurrentOverTemperatureDetectorState()
 {
     if ( overTemperatureDetectorStateRead() ) {
-        uartUsb.printf( "Temperature is above the maximum level\r\n");
+        pcSerialComStringWrite( "Temperature is above the maximum level\r\n");
     } else {
-        uartUsb.printf( "Temperature is below the maximum level\r\n");
+        pcSerialComStringWrite( "Temperature is below the maximum level\r\n");
     }
 }
 
 static void commandEnterCodeSequence()
 {
     if( alarmStateRead() ) {
-        uartUsb.printf( "Please enter the four digits numeric code " );
-        uartUsb.printf( "to deactivate the alarm: " );
+        pcSerialComStringWrite( "Please enter the four digits numeric code " );
+        pcSerialComStringWrite( "to deactivate the alarm: " );
         pcSerialComMode = PC_SERIAL_GET_CODE;
         codeComplete = false;
         numberOfCodeChars = 0;
     } else {
-        uartUsb.printf( "Alarm is not activated.\r\n" );
+        pcSerialComStringWrite( "Alarm is not activated.\r\n" );
     }
 }
 
 static void commandEnterNewCode()
 {
-    uartUsb.printf( "Please enter the new four digits numeric code " );
-    uartUsb.printf( "to deactivate the alarm: " );
+    pcSerialComStringWrite( "Please enter the new four digits numeric code " );
+    pcSerialComStringWrite( "to deactivate the alarm: " );
     numberOfCodeChars = 0;
     pcSerialComMode = PC_SERIAL_SAVE_NEW_CODE;
+
 }
 
 static void commandShowCurrentTemperatureInCelsius()
 {
-    uartUsb.printf( "Temperature: %.2f °C\r\n",
-                    temperatureSensorReadCelsius() );    
+    char str[100];
+    sprintf ( str, "Temperature: %.2f °C\r\n",
+                    temperatureSensorReadCelsius() );
+    pcSerialComStringWrite( str );  
 }
 
 static void commandShowCurrentTemperatureInFahrenheit()
 {
-    uartUsb.printf( "Temperature: %.2f °F\r\n", 
-                    temperatureSensorReadFahrenheit() );    
+    char str[100];
+    sprintf ( str, "Temperature: %.2f °C\r\n",
+                    temperatureSensorReadFahrenheit() );
+    pcSerialComStringWrite( str );  
 }
 
 static void commandEventLogSaveToSdCard()
@@ -324,49 +320,49 @@ static void commandsdCardListFiles()
 
 static void commandSetDateAndTime()
 {
-    int year   = 0;
-    int month  = 0;
-    int day    = 0;
-    int hour   = 0;
-    int minute = 0;
-    int second = 0;
+    char year[4];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char minute[2];
+    char second[2];
     
-    uartUsb.printf("\r\nType de current year (YYYY) and press enter: ");
-    uartUsb.scanf("%d", &year);
-    uartUsb.printf("%d\r\n", year);
+    pcSerialComStringWrite("\r\nType four digits for the current year (YYYY): ");
+    pcSerialComStringRead( year, 4);
+    pcSerialComStringWrite("\r\n");
 
-    uartUsb.printf("Type de current month (1-12) and press enter: ");
-    uartUsb.scanf("%d", &month);
-    uartUsb.printf("%d\r\n", month);
+    pcSerialComStringWrite("Type two digits for the current month (01-12): ");
+    pcSerialComStringRead( month, 2);
+    pcSerialComStringWrite("\r\n");
 
-    uartUsb.printf("Type de current day (1-31) and press enter: ");
-    uartUsb.scanf("%d", &day);
-    uartUsb.printf("%d\r\n", day);
+    pcSerialComStringWrite("Type two digits for the current day (01-31): ");
+    pcSerialComStringRead( day, 2);
+    pcSerialComStringWrite("\r\n");
 
-    uartUsb.printf("Type de current hour (0-23) and press enter: ");
-    uartUsb.scanf("%d", &hour);
-    uartUsb.printf("%d\r\n",hour);
+    pcSerialComStringWrite("Type two digits for the current hour (00-23): ");
+    pcSerialComStringRead( hour, 2);
+    pcSerialComStringWrite("\r\n");
 
-    uartUsb.printf("Type de current minutes (0-59) and press enter: ");
-    uartUsb.scanf("%d", &minute);
-    uartUsb.printf("%d\r\n", minute);
+    pcSerialComStringWrite("Type two digits for the current minutes (00-59): ");
+    pcSerialComStringRead( minute, 2);
+    pcSerialComStringWrite("\r\n");
 
-    uartUsb.printf("Type de current seconds (0-59) and press enter: ");
-    uartUsb.scanf("%d", &second);
-    uartUsb.printf("%d\r\n", second);
+    pcSerialComStringWrite("Type two digits for the current seconds (00-59): ");
+    pcSerialComStringRead( second, 2);
+    pcSerialComStringWrite("\r\n");
     
-    uartUsb.printf("Date and time has been set\r\n");
+    pcSerialComStringWrite("Date and time has been set\r\n");
 
-    while ( uartUsb.readable() ) {
-        uartUsb.getc();
-    }
-
-    dateAndTimeWrite( year, month, day, hour, minute, second );
+    dateAndTimeWrite( atoi(year), atoi(month), atoi(day), 
+        atoi(hour), atoi(minute), atoi(second) );
 }
 
 static void commandShowDateAndTime()
 {
-    uartUsb.printf("Date and Time = %s", dateAndTimeRead());
+    char str[100];
+    sprintf ( str, "Date and Time = %s", dateAndTimeRead() );
+    pcSerialComStringWrite( str );
+    pcSerialComStringWrite("\r\n");
 }
 
 static void commandShowStoredEvents()
@@ -375,13 +371,46 @@ static void commandShowStoredEvents()
     int i;
     for (i = 0; i < eventLogNumberOfStoredEvents(); i++) {
         eventLogRead( i, str );
-        uartUsb.printf( "%s\r\n", str );                       
+        pcSerialComStringWrite( str );   
+        pcSerialComStringWrite( "\r\n" );                    
     }
+}
+
+static void commandShowCurrentMotorState()
+{
+    switch ( motorDirectionRead() ) {
+        case STOPPED: 
+            pcSerialComStringWrite( "The motor is stopped\r\n"); break;
+        case DIRECTION_1: 
+            pcSerialComStringWrite( "The motor is turning in direction 1\r\n"); break;
+        case DIRECTION_2: 
+            pcSerialComStringWrite( "The motor is turning in direction 2\r\n"); break;
+    }
+}
+
+static void commandShowCurrentGateState()
+{
+    switch ( gateStatusRead() ) {
+        case GATE_CLOSED: pcSerialComStringWrite( "The gate is closed\r\n"); break;
+        case GATE_OPEN: pcSerialComStringWrite( "The gate is open\r\n"); break;
+        case GATE_OPENING: pcSerialComStringWrite( "The gate is opening\r\n"); break;
+        case GATE_CLOSING: pcSerialComStringWrite( "The gate is closing\r\n"); break;
+    }
+}
+
+static void commandMotionSensorActivate()
+{
+    motionSensorActivate();
+}
+
+static void commandMotionSensorDeactivate()
+{
+    motionSensorDeactivate();
 }
 
 static void commandGetFileName()
 {
-    uartUsb.printf( "Please enter the file name \r\n" );
+    pcSerialComStringWrite( "Please enter the file name \r\n" );
     pcSerialComMode = PC_SERIAL_GET_FILE_NAME ;
     numberOfCharsInFileName = 0;
 }
@@ -395,7 +424,7 @@ static void pcSerialComGetFileName( char receivedChar )
         pcSerialComShowSdCardFile( fileName );
     } else {
         fileName[numberOfCharsInFileName] = receivedChar;
-        uartUsb.printf( "%c", receivedChar );
+        pcSerialComCharWrite( receivedChar );
         numberOfCharsInFileName++;
     }
 }
