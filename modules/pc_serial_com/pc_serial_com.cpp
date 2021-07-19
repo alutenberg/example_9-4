@@ -31,7 +31,7 @@ typedef enum{
 
 //=====[Declaration and initialization of public global objects]===============
 
-UnbufferedSerial uartUsb(USBTX, USBRX,115200);
+UnbufferedSerial uartUsb(USBTX, USBRX, 115200);
 
 //=====[Declaration of external public global variables]=======================
 
