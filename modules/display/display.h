@@ -36,7 +36,7 @@ void displayInit( displayType_t type, displayConnection_t connection );
  
 void displayCharPositionWrite( uint8_t charPositionX, uint8_t charPositionY );
 
-void displayStringWrite( char const * str );
+void displayStringWrite( const char * str );
 
 void displayClear( void );
 
