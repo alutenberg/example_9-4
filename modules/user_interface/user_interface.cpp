@@ -171,22 +171,22 @@ static void userInterfaceMatrixKeypadUpdate()
                 motionSensorDeactivate();
             }
             if( keyReleased == '1' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_RED, true );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_RED, true );
             }
             if( keyReleased == '2' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_GREEN, true );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_GREEN, true );
             }
             if( keyReleased == '3' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_BLUE, true );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_BLUE, true );
             }
             if( keyReleased == '4' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_RED, false );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_RED, false );
             }
             if( keyReleased == '5' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_GREEN, false );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_GREEN, false );
             }
             if( keyReleased == '6' ) {
-                lightSystemBrightnessChangeEnable( RGB_LED_BLUE, false );
+                lightSystemBrightnessChangeRGBFactor( RGB_LED_BLUE, false );
             }
         }
     }

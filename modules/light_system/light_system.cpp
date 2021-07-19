@@ -24,9 +24,9 @@ static float lightSystemLoopGain = 0.01;
 //=====[Declaration and initialization of private global variables]============
 
 static float dutyCycle = 0.5f;
-static bool brightnessRGBLedRedChangeEnabled = true;
-static bool brightnessRGBLedGreenChangeEnabled = true;
-static bool brightnessRGBLedBlueChangeEnabled = true;
+static float brightnessRGBLedRedFactor = 0.5f;
+static float brightnessRGBLedGreenFactor = 0.5f;
+static float brightnessRGBLedBlueFactor = 0.5f;
 
 //=====[Implementations of public functions]===================================
 
@@ -40,22 +40,31 @@ void lightSystemUpdate()
     dutyCycle = dutyCycle + lightSystemLoopGain
                             * (lightLevelControlRead() - ldrSensorRead());
 
-    if ( brightnessRGBLedRedChangeEnabled ) setDutyCycle( RGB_LED_RED, dutyCycle );
-    if ( brightnessRGBLedGreenChangeEnabled ) setDutyCycle( RGB_LED_GREEN, dutyCycle );
-    if ( brightnessRGBLedBlueChangeEnabled ) setDutyCycle( RGB_LED_BLUE, dutyCycle );
+    setDutyCycle( RGB_LED_RED, brightnessRGBLedRedFactor*dutyCycle );
+    setDutyCycle( RGB_LED_GREEN, brightnessRGBLedGreenFactor*dutyCycle );
+    setDutyCycle( RGB_LED_BLUE, brightnessRGBLedBlueFactor*dutyCycle );
 }
 
-void lightSystemBrightnessChangeEnable( lightSystem_t light, bool state )
+void lightSystemBrightnessChangeRGBFactor( lightSystem_t light, bool state )
 {
     switch( light ) {
         case RGB_LED_RED:
-            brightnessRGBLedRedChangeEnabled = state;
+            if ( state ) brightnessRGBLedRedFactor+=0.1;
+                else brightnessRGBLedRedFactor-=0.1;
+            if ( brightnessRGBLedRedFactor > 1) brightnessRGBLedRedFactor=1.0;
+            if ( brightnessRGBLedRedFactor < 0) brightnessRGBLedRedFactor=0.0; 
         break;
         case RGB_LED_GREEN:
-            brightnessRGBLedGreenChangeEnabled = state;
+            if ( state ) brightnessRGBLedGreenFactor+=0.1;
+                else brightnessRGBLedGreenFactor-=0.1;  
+            if ( brightnessRGBLedGreenFactor > 1) brightnessRGBLedGreenFactor=1.0;
+            if ( brightnessRGBLedGreenFactor < 0) brightnessRGBLedGreenFactor=0.0;      
         break;
         case RGB_LED_BLUE:
-            brightnessRGBLedBlueChangeEnabled = state;
+            if ( state ) brightnessRGBLedBlueFactor+=0.1;
+                else brightnessRGBLedBlueFactor-=0.1;   
+            if ( brightnessRGBLedBlueFactor > 1) brightnessRGBLedBlueFactor=1.0;
+            if ( brightnessRGBLedBlueFactor < 0) brightnessRGBLedBlueFactor=0.0;
         break;
         default:
         break;
