@@ -11,7 +11,7 @@
 
 //=====[Declaration and initialization of public global objects]===============
 
-AnalogIn pote(A0);
+AnalogIn potentiometer(A0);
 
 //=====[Declaration of external public global variables]=======================
 
@@ -29,7 +29,7 @@ void lightLevelControlUpdate() { }
 
 float lightLevelControlRead()
 {
-    return pote.read();
+    return potentiometer.read();
 }
 
 //=====[Implementations of private functions]==================================
