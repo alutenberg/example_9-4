@@ -442,7 +442,6 @@ static void displayPinWrite( uint8_t pinName, int value )
                 default: break;
             }
             break;
-
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
            if ( value ) {
                 switch( pinName ) {
