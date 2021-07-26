@@ -429,6 +429,7 @@ static void displayPinWrite( uint8_t pinName, int value )
                 case DISPLAY_PIN_RW: break; 
                 default: break;
             }
+            break;
         case DISPLAY_CONNECTION_GPIO_4BITS:
             switch( pinName ) {
                 case DISPLAY_PIN_D4: displayD4 = value;   break;
@@ -440,6 +441,7 @@ static void displayPinWrite( uint8_t pinName, int value )
                 case DISPLAY_PIN_RW: break; 
                 default: break;
             }
+            break;
 
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
            if ( value ) {
@@ -478,6 +480,7 @@ static void displayPinWrite( uint8_t pinName, int value )
             if ( pcf8574.displayPin_D6 ) pcf8574.data |= 0b01000000; 
             if ( pcf8574.displayPin_D7 ) pcf8574.data |= 0b10000000; 
             I2C_PCF8574.write( pcf8574.address, &pcf8574.data, 1);
+            break;
 
         case DISPLAY_CONNECTION_SPI:
         break;
