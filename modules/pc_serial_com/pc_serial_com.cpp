@@ -291,7 +291,7 @@ static void commandEnterNewCode()
 static void commandShowCurrentTemperatureInCelsius()
 {
     char str[100];
-    sprintf ( str, "Temperature: %.2f °C\r\n",
+    sprintf ( str, "Temperature: %.2f \xB0 C\r\n",
                     temperatureSensorReadCelsius() );
     pcSerialComStringWrite( str );  
 }
@@ -299,7 +299,7 @@ static void commandShowCurrentTemperatureInCelsius()
 static void commandShowCurrentTemperatureInFahrenheit()
 {
     char str[100];
-    sprintf ( str, "Temperature: %.2f °C\r\n",
+    sprintf ( str, "Temperature: %.2f \xB0 C\r\n",
                     temperatureSensorReadFahrenheit() );
     pcSerialComStringWrite( str );  
 }
