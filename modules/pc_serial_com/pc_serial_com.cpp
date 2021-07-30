@@ -320,12 +320,12 @@ static void commandsdCardListFiles()
 
 static void commandSetDateAndTime()
 {
-    char year[4];
-    char month[2];
-    char day[2];
-    char hour[2];
-    char minute[2];
-    char second[2];
+    char year[5];
+    char month[3];
+    char day[3];
+    char hour[3];
+    char minute[3];
+    char second[3];
     
     pcSerialComStringWrite("\r\nType four digits for the current year (YYYY): ");
     pcSerialComStringRead( year, 4);
