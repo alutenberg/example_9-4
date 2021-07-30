@@ -54,6 +54,9 @@ void motionSensorActivate()
 void motionSensorDeactivate()
 {
     motionSensorActivated = false;
+    if ( !pirState ) {
+        pirOutputSignal.rise(NULL);
+    }
     pcSerialComStringWrite("The motion sensor has been deactivated\r\n");
 }
 
