@@ -48,7 +48,7 @@ static bool codeComplete = false;
 static int numberOfCodeChars = 0;
 static int numberOfCharsInFileName = 0;
 
-static char fileName[40];
+static char fileName[SD_CARD_FILENAME_MAX_LENGTH];
 
 //=====[Declarations (prototypes) of private functions]========================
 
@@ -417,7 +417,8 @@ static void commandGetFileName()
 
 static void pcSerialComGetFileName( char receivedChar )
 {
-    if ( receivedChar == '\r' ) {
+    if ( (receivedChar == '\r') &&
+         (numberOfCharsInFileName < SD_CARD_FILENAME_MAX_LENGTH) ) {
         pcSerialComMode = PC_SERIAL_COMMANDS;
         fileName[numberOfCharsInFileName] = NULL;
         numberOfCharsInFileName = 0;
