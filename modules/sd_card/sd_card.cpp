@@ -61,8 +61,8 @@ bool sdCardWriteFile( const char* fileName, const char* writeBuffer )
     char fileNameSD[80];
     
     fileNameSD[0] = 0;
-    strncat( fileNameSD, "/sd/", strlen("/sd/") );
-    strncat( fileNameSD, fileName, strlen(fileName) );
+    strcat( fileNameSD, "/sd/" );
+    strcat( fileNameSD, fileName );
 
     FILE *fd = fopen( fileNameSD, "a" );
 
@@ -81,8 +81,8 @@ bool sdCardReadFile( const char* fileName, char * readBuffer )
     int i;
     
     fileNameSD[0] = 0;
-    strncat( fileNameSD, "/sd/", strlen("/sd/") );
-    strncat( fileNameSD, fileName, strlen(fileName) );
+    strcat( fileNameSD, "/sd/" );
+    strcat( fileNameSD, fileName );
     
     FILE *fd = fopen( fileNameSD, "r" );
     
@@ -118,8 +118,8 @@ bool sdCardListFiles( char* fileNamesBuffer, int fileNamesBufferSize )
         while ( ( de != NULL ) && 
                 ( NumberOfUsedBytesInBuffer + strlen(de->d_name) < 
                     fileNamesBufferSize) ) {
-            strncat( fileNamesBuffer, de->d_name, strlen(de->d_name) );
-            strncat( fileNamesBuffer, "\r\n", strlen("\r\n") );
+            strcat( fileNamesBuffer, de->d_name );
+            strcat( fileNamesBuffer, "\r\n" );
             NumberOfUsedBytesInBuffer = NumberOfUsedBytesInBuffer + strlen(de->d_name);
             de = readdir(dir);
         }

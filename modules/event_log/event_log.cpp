@@ -94,11 +94,11 @@ void eventLogWrite( bool currentState, const char* elementName )
 {
     char eventAndStateStr[EVENT_LOG_NAME_MAX_LENGTH];
     eventAndStateStr[0] = 0;
-    strncat( eventAndStateStr, elementName, strlen(elementName) );
+    strcat( eventAndStateStr, elementName );
     if ( currentState ) {
-        strncat( eventAndStateStr, "_ON", strlen("_ON") );
+        strcat( eventAndStateStr, "_ON" );
     } else {
-        strncat( eventAndStateStr, "_OFF", strlen("_OFF") );
+        strcat( eventAndStateStr, "_OFF" );
     }
 
     arrayOfStoredEvents[eventsIndex].seconds = time(NULL);
@@ -129,7 +129,7 @@ bool eventLogSaveToSdCard()
 
     strftime( fileName, SD_CARD_FILENAME_MAX_LENGTH, 
               "%Y_%m_%d_%H_%M_%S", localtime(&seconds) );
-    strncat( fileName, ".txt", strlen(".txt") );
+    strcat( fileName, ".txt" );
 
     for (i = 0; i < eventLogNumberOfStoredEvents(); i++) {
         if ( !arrayOfStoredEvents[i].storedInSd ) {
