@@ -82,19 +82,12 @@ int eventLogNumberOfStoredEvents()
 
 void eventLogRead( int index, char* str )
 {
-    str[0] = 0;
-
-    strncat( str, "Event = ", strlen("Event = ") );
-
-    strncat( str, arrayOfStoredEvents[index].typeOfEvent,
-             strlen(arrayOfStoredEvents[index].typeOfEvent) );
-
-    strncat( str, "\r\nDate and Time = ", strlen("\r\nDate and Time = ") );
-
-    strncat( str, ctime(&arrayOfStoredEvents[index].seconds),
-             strlen(ctime(&arrayOfStoredEvents[index].seconds)) );
-
-    strncat( str, "\r\n", strlen("\r\n") );
+    str[0] = '\0';
+    strcat( str, "Event = " );
+    strcat( str, arrayOfStoredEvents[index].typeOfEvent );
+    strcat( str, "\r\nDate and Time = " );
+    strcat( str, ctime(&arrayOfStoredEvents[index].seconds) );
+    strcat( str, "\r\n" );
 }
 
 void eventLogWrite( bool currentState, const char* elementName )
