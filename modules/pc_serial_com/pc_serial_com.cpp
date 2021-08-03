@@ -251,7 +251,7 @@ static void commandShowCurrentAlarmState()
 static void commandShowCurrentGasDetectorState()
 {
     if ( gasDetectorStateRead() ) {
-        pcSerialComStringWrite( "Gas is being detected\r\n"); // Ver de poner la concentracion de gas no este superando el umbral
+        pcSerialComStringWrite( "Gas is being detected\r\n");
     } else {
         pcSerialComStringWrite( "Gas is not being detected\r\n");
     }    
