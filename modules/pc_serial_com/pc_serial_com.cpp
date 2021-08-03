@@ -219,8 +219,8 @@ static void availableCommands()
 {
     pcSerialComStringWrite( "Available commands:\r\n" );
     pcSerialComStringWrite( "Press '1' to get the alarm state\r\n" );
-    pcSerialComStringWrite( "Press '2' for gas detector state\r\n" );
-    pcSerialComStringWrite( "Press '3' for over temperature detector state\r\n" );
+    pcSerialComStringWrite( "Press '2' to get the gas detector state\r\n" );
+    pcSerialComStringWrite( "Press '3' to get the over temperature detector state\r\n" );
     pcSerialComStringWrite( "Press '4' to enter the code to deactivate the alarm\r\n" );
     pcSerialComStringWrite( "Press '5' to enter a new code to deactivate the alarm\r\n" );
     pcSerialComStringWrite( "Press 'f' or 'F' to get lm35 reading in Fahrenheit\r\n" );
