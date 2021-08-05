@@ -6,7 +6,7 @@
 //=====[Declaration of public defines]=========================================
 
 #define EVENT_LOG_MAX_STORAGE       100
-#define EVENT_LOG_NAME_MAX_LENGTH    13
+#define EVENT_LOG_NAME_MAX_LENGTH    14
 #define EVENT_HEAD_STR_LENGTH         9
 #define NEW_LINE_STR_LENGTH           4
 #define DATE_AND_TIME_STR_LENGTH     17
