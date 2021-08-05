@@ -32,7 +32,6 @@ static void welcomeMessage();
 void audioInit()
 {
     welcomeMessage(); 
-	return;
 }
 
 //=====[Implementations of private functions]==================================
@@ -41,14 +40,12 @@ static void welcomeMessage()
 {
     float audioDutyCycle = 0.0;
 
-	audioOut.period(0.000025f);
+    audioOut.period(0.000025f);
 
-    int i = 0;	
-	for( i=1; i<welcomeMessageLength; i++ ) {
-		audioDutyCycle = (float) welcomeMessageData[i]/255;
-		audioOut.write(audioDutyCycle); 
-		wait_us(AUDIO_SAMPLE_DURATION);
+    int i = 0;    
+    for( i=1; i<welcomeMessageLength; i++ ) {
+        audioDutyCycle = (float) welcomeMessageData[i]/255;
+        audioOut.write(audioDutyCycle); 
+        wait_us(AUDIO_SAMPLE_DURATION);
     }
-	
-	return;
 }

@@ -40,7 +40,7 @@ void alarmInit()
 {
     alarmState = OFF;
     sirenInit();
-    strobeLightInit();	
+    strobeLightInit();    
 }
 
 void alarmUpdate()

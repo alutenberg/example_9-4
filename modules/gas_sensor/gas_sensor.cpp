@@ -24,12 +24,10 @@ DigitalIn mq2(PE_12);
 
 void gasSensorInit()
 {
-    return;
 }
 
 void gasSensorUpdate()
 {
-    return;
 }
 
 bool gasSensorRead()

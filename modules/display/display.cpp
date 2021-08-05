@@ -144,20 +144,20 @@ void displayInit( displayType_t type, displayConnection_t connection )
     display.type = type;
     display.connection = connection;
     display.mode = DISPLAY_MODE_CHAR;
-	
-	if( display.connection == DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER) {
-		pcf8574.address = PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS;
-		pcf8574.data = 0b00000000;
-		I2C_PCF8574.frequency(100000);
+    
+    if( display.connection == DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER) {
+        pcf8574.address = PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS;
+        pcf8574.data = 0b00000000;
+        I2C_PCF8574.frequency(100000);
         displayPinWrite( DISPLAY_PIN_A_PCF8574,  ON );
     }
 
-	if( display.connection == DISPLAY_CONNECTION_SPI) {
+    if( display.connection == DISPLAY_CONNECTION_SPI) {
         SPI_ST7920.format( 8, 3 );
         SPI_ST7920.frequency( 1000000 );
     }    
-	
-	initial8BitCommunicationIsCompleted = FALSE;    
+    
+    initial8BitCommunicationIsCompleted = FALSE;    
 
     delay( 50 );
     
@@ -216,17 +216,17 @@ void displayInit( displayType_t type, displayConnection_t connection )
                       DISPLAY_IR_CLEAR_DISPLAY );       
     delay( 1 ); 
 
-	displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
-	                  DISPLAY_IR_ENTRY_MODE_SET |
-	                  DISPLAY_IR_ENTRY_MODE_SET_INCREMENT |       
-	                  DISPLAY_IR_ENTRY_MODE_SET_NO_SHIFT );                  
+    displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
+                      DISPLAY_IR_ENTRY_MODE_SET |
+                      DISPLAY_IR_ENTRY_MODE_SET_INCREMENT |       
+                      DISPLAY_IR_ENTRY_MODE_SET_NO_SHIFT );                  
     delay( 1 );           
 
     displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                       DISPLAY_IR_DISPLAY_CONTROL |
-	                  DISPLAY_IR_DISPLAY_CONTROL_DISPLAY_ON |      
-	                  DISPLAY_IR_DISPLAY_CONTROL_CURSOR_OFF |    
-	                  DISPLAY_IR_DISPLAY_CONTROL_BLINK_OFF );    
+                      DISPLAY_IR_DISPLAY_CONTROL_DISPLAY_ON |      
+                      DISPLAY_IR_DISPLAY_CONTROL_CURSOR_OFF |    
+                      DISPLAY_IR_DISPLAY_CONTROL_BLINK_OFF );    
     delay( 1 );  
 }
 
@@ -320,34 +320,34 @@ void displayClear( void )
 void displayModeWrite( displayMode_t mode )
 {
     if ( mode == DISPLAY_MODE_GRAPHIC )
-	{
-		displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
-		                  DISPLAY_IR_FUNCTION_SET  | 
+    {
+        displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
+                          DISPLAY_IR_FUNCTION_SET  | 
                           DISPLAY_IR_FUNCTION_SET_8BITS |
                           DISPLAY_IR_FUNCTION_SET_EXTENDED_INSTRUCION_SET );
-		delay(1);
-		displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
-		                  DISPLAY_IR_FUNCTION_SET  | 
+        delay(1);
+        displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
+                          DISPLAY_IR_FUNCTION_SET  | 
                           DISPLAY_IR_FUNCTION_SET_8BITS |
                           DISPLAY_IR_FUNCTION_SET_EXTENDED_INSTRUCION_SET |
                           DISPLAY_IR_FUNCTION_SET_GRAPHIC_DISPLAY_ON  );
-		delay(1);
-	} else if ( mode == DISPLAY_MODE_CHAR ) {
-		displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
-		                  DISPLAY_IR_FUNCTION_SET | 
+        delay(1);
+    } else if ( mode == DISPLAY_MODE_CHAR ) {
+        displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
+                          DISPLAY_IR_FUNCTION_SET | 
                           DISPLAY_IR_FUNCTION_SET_8BITS |
                           DISPLAY_IR_FUNCTION_SET_BASIC_INSTRUCION_SET |
                           DISPLAY_IR_FUNCTION_SET_GRAPHIC_DISPLAY_OFF);
-		delay(1);
-	}
+        delay(1);
+    }
 }
 
 void displayBitmapWrite( uint8_t* bitmap )
 {
     uint8_t x, y;
-	for( y=0; y<64; y++ ) {
-		if ( y < 32 ) {
-			for( x = 0; x < 8; x++ ) {				                   
+    for( y=0; y<64; y++ ) {
+        if ( y < 32 ) {
+            for( x = 0; x < 8; x++ ) {                                   
                 displayCodeWrite( DISPLAY_RS_INSTRUCTION,
                                   DISPLAY_IR_SET_GDRAM_ADDR | 
                                   y );
@@ -359,8 +359,8 @@ void displayBitmapWrite( uint8_t* bitmap )
                 displayCodeWrite(DISPLAY_RS_DATA, 
                                  bitmap[2*x+1 + 16*y] );                                 
                 }
-		} else {
-			for( x = 0; x < 8; x++ ) {					                    
+        } else {
+            for( x = 0; x < 8; x++ ) {                                        
                 displayCodeWrite( DISPLAY_RS_INSTRUCTION,
                                   DISPLAY_IR_SET_GDRAM_ADDR | 
                                   (y-32) );
@@ -372,8 +372,8 @@ void displayBitmapWrite( uint8_t* bitmap )
                 displayCodeWrite(DISPLAY_RS_DATA, 
                                  bitmap[2*x+1 + 16*y]);                                 
                 }
-		}
-	}
+        }
+    }
 }
 
 //=====[Implementations of private functions]==================================
@@ -504,10 +504,10 @@ static void displayDataBusWrite( uint8_t dataBus )
         case DISPLAY_CONNECTION_GPIO_4BITS:
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
             if ( initial8BitCommunicationIsCompleted == TRUE) {
-            	displayPinWrite( DISPLAY_PIN_EN, ON );         
-            	delay( 1 );
-            	displayPinWrite( DISPLAY_PIN_EN, OFF );              
-            	delay( 1 );        
+                displayPinWrite( DISPLAY_PIN_EN, ON );         
+                delay( 1 );
+                displayPinWrite( DISPLAY_PIN_EN, OFF );              
+                delay( 1 );        
                 displayPinWrite( DISPLAY_PIN_D7, dataBus & 0b00001000 );
                 displayPinWrite( DISPLAY_PIN_D6, dataBus & 0b00000100 );  
                 displayPinWrite( DISPLAY_PIN_D5, dataBus & 0b00000010 );      

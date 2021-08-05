@@ -49,17 +49,17 @@ void temperatureSensorUpdate()
     int i = 0;
 
     lm35ReadingsArray[lm35SampleIndex] = lm35.read();
-	   lm35SampleIndex++;
+       lm35SampleIndex++;
     if ( lm35SampleIndex >= LM35_NUMBER_OF_AVG_SAMPLES) {
         lm35SampleIndex = 0;
     }
-	
+    
    lm35ReadingsSum = 0.0;
     for (i = 0; i < LM35_NUMBER_OF_AVG_SAMPLES; i++) {
         lm35ReadingsSum = lm35ReadingsSum + lm35ReadingsArray[i];
     }
     lm35ReadingsAverage = lm35ReadingsSum / LM35_NUMBER_OF_AVG_SAMPLES;
-	   lm35TemperatureC = analogReadingScaledWithTheLM35Formula ( lm35ReadingsAverage );	
+       lm35TemperatureC = analogReadingScaledWithTheLM35Formula ( lm35ReadingsAverage );    
 }
 
 
