@@ -60,7 +60,7 @@ bool sdCardWriteFile( const char* fileName, const char* writeBuffer )
 {
     char fileNameSD[SD_CARD_FILENAME_MAX_LENGTH+4];
     
-    fileNameSD[0] = 0;
+    fileNameSD[0] = NULL;
     strcat( fileNameSD, "/sd/" );
     strcat( fileNameSD, fileName );
 
@@ -75,12 +75,12 @@ bool sdCardWriteFile( const char* fileName, const char* writeBuffer )
     }
 }
 
-bool sdCardReadFile( const char* fileName, char * readBuffer )
+bool sdCardReadFile( const char* fileName, char * readBuffer, int readBufferSize )
 {
     char fileNameSD[SD_CARD_FILENAME_MAX_LENGTH+4];
     int i;
     
-    fileNameSD[0] = 0;
+    fileNameSD[0] = NULL;
     strcat( fileNameSD, "/sd/" );
     strcat( fileNameSD, fileName );
     
@@ -92,10 +92,11 @@ bool sdCardReadFile( const char* fileName, char * readBuffer )
         pcSerialComStringWrite( "\r\n" );
 
         i = 0;
-        while (!feof(fd)) {
+        while ( ( !feof(fd) ) && ( i < readBufferSize - 1 ) ) {
            fread( &readBuffer[i], 1, 1, fd );
            i++;
         }
+        readBuffer[i] = NULL;
         fclose( fd );
         return true;
     } else {
