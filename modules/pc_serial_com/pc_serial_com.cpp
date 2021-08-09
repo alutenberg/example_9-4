@@ -92,7 +92,7 @@ char pcSerialComCharRead()
 {
     char receivedChar = '\0';
     if( uartUsb.readable() ) {
-        uartUsb.read(&receivedChar,1);
+        uartUsb.read( &receivedChar, 1 );
     }
     return receivedChar;
 }
