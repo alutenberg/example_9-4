@@ -96,7 +96,7 @@ bool sdCardReadFile( const char* fileName, char * readBuffer, int readBufferSize
            fread( &readBuffer[i], 1, 1, fd );
            i++;
         }
-        readBuffer[i] = NULL;
+        readBuffer[i-1] = NULL;
         fclose( fd );
         return true;
     } else {
