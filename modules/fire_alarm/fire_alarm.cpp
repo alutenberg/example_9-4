@@ -20,8 +20,6 @@
 
 DigitalIn fireAlarmTestButton(BUTTON1);
 
-//=====[Declaration and initialization of private global variables]============
-
 //=====[Declaration of external public global variables]=======================
 
 //=====[Declaration and initialization of public global variables]=============
