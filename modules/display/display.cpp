@@ -157,7 +157,7 @@ void displayInit( displayType_t type, displayConnection_t connection )
         SPI_ST7920.frequency( 1000000 );
     }    
     
-    initial8BitCommunicationIsCompleted = FALSE;    
+    initial8BitCommunicationIsCompleted = false;    
 
     delay( 50 );
     
@@ -194,7 +194,7 @@ void displayInit( displayType_t type, displayConnection_t connection )
                               DISPLAY_IR_FUNCTION_SET_4BITS );
             delay( 1 );  
 
-            initial8BitCommunicationIsCompleted = TRUE;  
+            initial8BitCommunicationIsCompleted = true;  
 
             displayCodeWrite( DISPLAY_RS_INSTRUCTION, 
                               DISPLAY_IR_FUNCTION_SET | 
@@ -503,7 +503,7 @@ static void displayDataBusWrite( uint8_t dataBus )
               
         case DISPLAY_CONNECTION_GPIO_4BITS:
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
-            if ( initial8BitCommunicationIsCompleted == TRUE) {
+            if ( initial8BitCommunicationIsCompleted == true) {
                 displayPinWrite( DISPLAY_PIN_EN, ON );         
                 delay( 1 );
                 displayPinWrite( DISPLAY_PIN_EN, OFF );              
