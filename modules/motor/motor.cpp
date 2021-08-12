@@ -20,8 +20,8 @@ DigitalInOut motorM2Pin(PE_3);
 
 //=====[Declaration and initialization of public global variables]=============
 
-MotorDirection_t motorDirection;
-MotorDirection_t motorState;
+motorDirection_t motorDirection;
+motorDirection_t motorState;
 
 //=====[Declaration and initialization of private global variables]============
 
@@ -41,14 +41,14 @@ void motorControlInit()
     motorState = STOPPED;
 }
 
-MotorDirection_t motorDirectionRead()
+motorDirection_t motorDirectionRead()
 {
     return motorDirection;
 }
 
-void motorDirectionWrite( MotorDirection_t Direction )
+void motorDirectionWrite( motorDirection_t direction )
 {
-    motorDirection = Direction;
+    motorDirection = direction;
 }
 
 void motorControlUpdate()
