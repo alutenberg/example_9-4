@@ -63,7 +63,7 @@
 
 #define SPI1_MOSI PA_7
 #define SPI1_SCK  PA_5
-#define SPI1_CS   PA_6
+#define SPI1_CS   PD_14
 #define SPI1_MISO PA_6
 
 #define DISPLAY_IR_SET_GDRAM_ADDR  0b10000000
