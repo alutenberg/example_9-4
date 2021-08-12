@@ -311,7 +311,7 @@ static void commandEventLogSaveToSdCard()
 
 static void commandsdCardListFiles()
 {
-    systemBuffer[0] = NULL;
+    systemBuffer[0] = '\0';
     sdCardListFiles( systemBuffer, 
                      sizeof(systemBuffer) );
     pcSerialComStringWrite( systemBuffer );
@@ -420,7 +420,7 @@ static void pcSerialComGetFileName( char receivedChar )
     if ( (receivedChar == '\r') &&
          (numberOfCharsInFileName < SD_CARD_FILENAME_MAX_LENGTH) ) {
         pcSerialComMode = PC_SERIAL_COMMANDS;
-        fileName[numberOfCharsInFileName] = NULL;
+        fileName[numberOfCharsInFileName] = '\0';
         numberOfCharsInFileName = 0;
         pcSerialComShowSdCardFile( fileName );
     } else {
@@ -432,7 +432,7 @@ static void pcSerialComGetFileName( char receivedChar )
 
 static void pcSerialComShowSdCardFile( char* fileName ) 
 {
-    systemBuffer[0] = NULL;
+    systemBuffer[0] = '\0';
     pcSerialComStringWrite( "\r\n" );
     if ( sdCardReadFile( fileName, systemBuffer, sizeof(systemBuffer) ) ) {
         pcSerialComStringWrite( "The file content is:\r\n");

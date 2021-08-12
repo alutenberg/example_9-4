@@ -60,7 +60,7 @@ bool sdCardWriteFile( const char* fileName, const char* writeBuffer )
 {
     char fileNameSD[SD_CARD_FILENAME_MAX_LENGTH+4];
     
-    fileNameSD[0] = NULL;
+    fileNameSD[0] = '\0';
     strcat( fileNameSD, "/sd/" );
     strcat( fileNameSD, fileName );
 
@@ -80,7 +80,7 @@ bool sdCardReadFile( const char* fileName, char * readBuffer, int readBufferSize
     char fileNameSD[SD_CARD_FILENAME_MAX_LENGTH+4];
     int i;
     
-    fileNameSD[0] = NULL;
+    fileNameSD[0] = '\0';
     strcat( fileNameSD, "/sd/" );
     strcat( fileNameSD, fileName );
     
@@ -96,7 +96,7 @@ bool sdCardReadFile( const char* fileName, char * readBuffer, int readBufferSize
            fread( &readBuffer[i], 1, 1, fd );
            i++;
         }
-        readBuffer[i-1] = NULL;
+        readBuffer[i-1] = '\0';
         fclose( fd );
         return true;
     } else {
