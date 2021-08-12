@@ -129,8 +129,6 @@ static display_t display;
 static pcf8574_t pcf8574;
 static bool initial8BitCommunicationIsCompleted;
 
-static uint8_t image[ (128 * 64) / 8 ];
-
 //=====[Declarations (prototypes) of private functions]========================
 
 static void displayPinWrite( uint8_t pinName, int value );
