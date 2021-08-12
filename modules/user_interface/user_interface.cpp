@@ -213,7 +213,7 @@ static void userInterfaceDisplayReportStateInit()
 
 static void userInterfaceDisplayReportStateUpdate()
 {
-    char temperatureString[2];
+    char temperatureString[3];
 
     sprintf(temperatureString, "%.0f", temperatureSensorReadCelsius());
     displayCharPositionWrite ( 12,0 );

@@ -353,9 +353,9 @@ void displayBitmapWrite( uint8_t* bitmap )
                                   DISPLAY_IR_SET_GDRAM_ADDR | 
                                   x );
                 displayCodeWrite(DISPLAY_RS_DATA, 
-                                 bitmap[2*x + 16*y] );
+                                 bitmap[16*y + 2*x] );
                 displayCodeWrite(DISPLAY_RS_DATA, 
-                                 bitmap[2*x+1 + 16*y] );                                 
+                                 bitmap[16*y + 2*x+1] );                                 
                 }
         } else {
             for( x = 0; x < 8; x++ ) {                                        
@@ -366,9 +366,9 @@ void displayBitmapWrite( uint8_t* bitmap )
                                   DISPLAY_IR_SET_GDRAM_ADDR | 
                                   (x+8) );
                 displayCodeWrite(DISPLAY_RS_DATA, 
-                                 bitmap[2*x + 16*y]);
+                                 bitmap[16*y + 2*x]);
                 displayCodeWrite(DISPLAY_RS_DATA, 
-                                 bitmap[2*x+1 + 16*y]);                                 
+                                 bitmap[16*y + 2*x+1]);                                 
                 }
         }
     }
