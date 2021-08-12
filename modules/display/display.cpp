@@ -91,14 +91,14 @@
 typedef struct{
     int address;
     char data;
-    bool displayPin_RS;
-    bool displayPin_RW; 
-    bool displayPin_EN;
-    bool displayPin_A;
-    bool displayPin_D4;
-    bool displayPin_D5;
-    bool displayPin_D6;
-    bool displayPin_D7;
+    bool displayPinRs;
+    bool displayPinRw; 
+    bool displayPinEn;
+    bool displayPinA;
+    bool displayPinD4;
+    bool displayPinD5;
+    bool displayPinD6;
+    bool displayPinD7;
 } pcf8574_t;
 
 //=====[Declaration and initialization of public global objects]===============
@@ -111,13 +111,13 @@ DigitalOut displayD4( D4 );
 DigitalOut displayD5( D5 );
 DigitalOut displayD6( D6 );
 DigitalOut displayD7( D7 );
-DigitalOut displayRS( D8 );
-DigitalOut displayEN( D9 );
+DigitalOut displayRs( D8 );
+DigitalOut displayEn( D9 );
 
-I2C I2C_PCF8574( I2C1_SDA, I2C1_SCL ); 
+I2C i2cPcf8574( I2C1_SDA, I2C1_SCL ); 
 
-DigitalOut SPI_ST7920_Chip_Select(SPI1_CS);
-SPI SPI_ST7920(SPI1_MOSI, SPI1_MISO, SPI1_SCK);
+DigitalOut spiSt7920ChipSelect(SPI1_CS);
+SPI spiSt7920(SPI1_MOSI, SPI1_MISO, SPI1_SCK);
 
 //=====[Declaration of external public global variables]=======================
 
@@ -148,13 +148,13 @@ void displayInit( displayType_t type, displayConnection_t connection )
     if( display.connection == DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER) {
         pcf8574.address = PCF8574_I2C_BUS_8BIT_WRITE_ADDRESS;
         pcf8574.data = 0b00000000;
-        I2C_PCF8574.frequency(100000);
+        i2cPcf8574.frequency(100000);
         displayPinWrite( DISPLAY_PIN_A_PCF8574,  ON );
     }
 
     if( display.connection == DISPLAY_CONNECTION_SPI) {
-        SPI_ST7920.format( 8, 3 );
-        SPI_ST7920.frequency( 1000000 );
+        spiSt7920.format( 8, 3 );
+        spiSt7920.frequency( 1000000 );
     }    
     
     initial8BitCommunicationIsCompleted = false;    
@@ -393,20 +393,20 @@ static void displayCodeWrite( bool type, uint8_t dataBus )
         break;
   
         case DISPLAY_CONNECTION_SPI:
-            SPI_ST7920.lock();
-            SPI_ST7920_Chip_Select = ON;
+            spiSt7920.lock();
+            spiSt7920ChipSelect = ON;
             if ( type == DISPLAY_RS_INSTRUCTION )           
-                SPI_ST7920.write( ST7920_SPI_SYNCHRONIZING_BIT_STRING |
+                spiSt7920.write( ST7920_SPI_SYNCHRONIZING_BIT_STRING |
                                   ST7920_SPI_RW_WRITE |
                                   ST7920_SPI_RS_INSTRUCTION );                              
                 else
-                SPI_ST7920.write( ST7920_SPI_SYNCHRONIZING_BIT_STRING |
+                spiSt7920.write( ST7920_SPI_SYNCHRONIZING_BIT_STRING |
                                   ST7920_SPI_RW_WRITE |
                                   ST7920_SPI_RS_DATA );               
-            SPI_ST7920.write( dataBus & 0b11110000 );      
-            SPI_ST7920.write( (dataBus<<4) & 0b11110000 );
-            SPI_ST7920_Chip_Select = OFF;
-            SPI_ST7920.unlock();
+            spiSt7920.write( dataBus & 0b11110000 );      
+            spiSt7920.write( (dataBus<<4) & 0b11110000 );
+            spiSt7920ChipSelect = OFF;
+            spiSt7920.unlock();
         break;
     }    
 }
@@ -424,8 +424,8 @@ static void displayPinWrite( uint8_t pinName, int value )
                 case DISPLAY_PIN_D5: displayD5 = value;   break;
                 case DISPLAY_PIN_D6: displayD6 = value;   break;
                 case DISPLAY_PIN_D7: displayD7 = value;   break;
-                case DISPLAY_PIN_RS: displayRS = value;   break;
-                case DISPLAY_PIN_EN: displayEN = value;   break;
+                case DISPLAY_PIN_RS: displayRs = value;   break;
+                case DISPLAY_PIN_EN: displayEn = value;   break;
                 case DISPLAY_PIN_RW: break; 
                 default: break;
             }
@@ -436,8 +436,8 @@ static void displayPinWrite( uint8_t pinName, int value )
                 case DISPLAY_PIN_D5: displayD5 = value;   break;
                 case DISPLAY_PIN_D6: displayD6 = value;   break;
                 case DISPLAY_PIN_D7: displayD7 = value;   break;
-                case DISPLAY_PIN_RS: displayRS = value;   break;
-                case DISPLAY_PIN_EN: displayEN = value;   break;
+                case DISPLAY_PIN_RS: displayRs = value;   break;
+                case DISPLAY_PIN_EN: displayEn = value;   break;
                 case DISPLAY_PIN_RW: break; 
                 default: break;
             }
@@ -445,40 +445,40 @@ static void displayPinWrite( uint8_t pinName, int value )
         case DISPLAY_CONNECTION_I2C_PCF8574_IO_EXPANDER:
            if ( value ) {
                 switch( pinName ) {
-                    case DISPLAY_PIN_D4: pcf8574.displayPin_D4 = ON; break;
-                    case DISPLAY_PIN_D5: pcf8574.displayPin_D5 = ON; break;
-                    case DISPLAY_PIN_D6: pcf8574.displayPin_D6 = ON; break;
-                    case DISPLAY_PIN_D7: pcf8574.displayPin_D7 = ON; break;
-                    case DISPLAY_PIN_RS: pcf8574.displayPin_RS = ON; break;
-                    case DISPLAY_PIN_EN: pcf8574.displayPin_EN = ON; break;
-                    case DISPLAY_PIN_RW: pcf8574.displayPin_RW = ON; break;
-                    case DISPLAY_PIN_A_PCF8574: pcf8574.displayPin_A = ON; break;
+                    case DISPLAY_PIN_D4: pcf8574.displayPinD4 = ON; break;
+                    case DISPLAY_PIN_D5: pcf8574.displayPinD5 = ON; break;
+                    case DISPLAY_PIN_D6: pcf8574.displayPinD6 = ON; break;
+                    case DISPLAY_PIN_D7: pcf8574.displayPinD7 = ON; break;
+                    case DISPLAY_PIN_RS: pcf8574.displayPinRs = ON; break;
+                    case DISPLAY_PIN_EN: pcf8574.displayPinEn = ON; break;
+                    case DISPLAY_PIN_RW: pcf8574.displayPinRw = ON; break;
+                    case DISPLAY_PIN_A_PCF8574: pcf8574.displayPinA = ON; break;
                     default: break;
                 }
             }
             else {
                 switch( pinName ) {
-                    case DISPLAY_PIN_D4: pcf8574.displayPin_D4 = OFF; break;
-                    case DISPLAY_PIN_D5: pcf8574.displayPin_D5 = OFF; break;
-                    case DISPLAY_PIN_D6: pcf8574.displayPin_D6 = OFF; break;
-                    case DISPLAY_PIN_D7: pcf8574.displayPin_D7 = OFF; break;
-                    case DISPLAY_PIN_RS: pcf8574.displayPin_RS = OFF; break;
-                    case DISPLAY_PIN_EN: pcf8574.displayPin_EN = OFF; break;
-                    case DISPLAY_PIN_RW: pcf8574.displayPin_RW = OFF; break;
-                    case DISPLAY_PIN_A_PCF8574: pcf8574.displayPin_A = OFF; break;
+                    case DISPLAY_PIN_D4: pcf8574.displayPinD4 = OFF; break;
+                    case DISPLAY_PIN_D5: pcf8574.displayPinD5 = OFF; break;
+                    case DISPLAY_PIN_D6: pcf8574.displayPinD6 = OFF; break;
+                    case DISPLAY_PIN_D7: pcf8574.displayPinD7 = OFF; break;
+                    case DISPLAY_PIN_RS: pcf8574.displayPinRs = OFF; break;
+                    case DISPLAY_PIN_EN: pcf8574.displayPinEn = OFF; break;
+                    case DISPLAY_PIN_RW: pcf8574.displayPinRw = OFF; break;
+                    case DISPLAY_PIN_A_PCF8574: pcf8574.displayPinA = OFF; break;
                     default: break;
                 }
             }     
             pcf8574.data = 0b00000000;
-            if ( pcf8574.displayPin_RS ) pcf8574.data |= 0b00000001; 
-            if ( pcf8574.displayPin_RW ) pcf8574.data |= 0b00000010; 
-            if ( pcf8574.displayPin_EN ) pcf8574.data |= 0b00000100; 
-            if ( pcf8574.displayPin_A  ) pcf8574.data |= 0b00001000; 
-            if ( pcf8574.displayPin_D4 ) pcf8574.data |= 0b00010000; 
-            if ( pcf8574.displayPin_D5 ) pcf8574.data |= 0b00100000; 
-            if ( pcf8574.displayPin_D6 ) pcf8574.data |= 0b01000000; 
-            if ( pcf8574.displayPin_D7 ) pcf8574.data |= 0b10000000; 
-            I2C_PCF8574.write( pcf8574.address, &pcf8574.data, 1);
+            if ( pcf8574.displayPinRs ) pcf8574.data |= 0b00000001; 
+            if ( pcf8574.displayPinRw ) pcf8574.data |= 0b00000010; 
+            if ( pcf8574.displayPinEn ) pcf8574.data |= 0b00000100; 
+            if ( pcf8574.displayPinA  ) pcf8574.data |= 0b00001000; 
+            if ( pcf8574.displayPinD4 ) pcf8574.data |= 0b00010000; 
+            if ( pcf8574.displayPinD5 ) pcf8574.data |= 0b00100000; 
+            if ( pcf8574.displayPinD6 ) pcf8574.data |= 0b01000000; 
+            if ( pcf8574.displayPinD7 ) pcf8574.data |= 0b10000000; 
+            i2cPcf8574.write( pcf8574.address, &pcf8574.data, 1);
             break;
 
         case DISPLAY_CONNECTION_SPI:
